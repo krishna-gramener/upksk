@@ -94,7 +94,8 @@
   input[type="email"],
   input[type="password"],
   input[type="text"],
-  input[type="url"] {
+  input[type="url"],
+  textarea {
     width: 100%;
     padding: 10px 12px;
     border-radius: 10px;
@@ -102,12 +103,20 @@
     font-size: 14px;
     background: #f9fafb;
     transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    font-family: inherit;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 100px;
+    line-height: 1.5;
   }
 
   input[type="email"]:focus,
   input[type="password"]:focus,
   input[type="text"]:focus,
-  input[type="url"]:focus {
+  input[type="url"]:focus,
+  textarea:focus {
     outline: none;
     border-color: #2563eb;
     box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
@@ -501,8 +510,31 @@
   .messages {
     flex: 1;
     overflow-y: auto;
+    overflow-x: hidden;
     padding-right: 4px;
     padding-bottom: 4px;
+    max-height: calc(100vh - 400px);
+    min-height: 200px;
+    scroll-behavior: smooth;
+  }
+  
+  /* Custom scrollbar for messages */
+  .messages::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .messages::-webkit-scrollbar-track {
+    background: #f3f4f6;
+    border-radius: 3px;
+  }
+  
+  .messages::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+  }
+  
+  .messages::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
   }
 
   .message {
@@ -1154,6 +1186,10 @@
     box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
     border: 1px solid rgba(148, 163, 184, 0.25);
     animation: modalSlideIn 0.3s ease-out;
+  }
+
+  .modal-content.modal-large {
+    max-width: 700px;
   }
 
   @keyframes modalSlideIn {

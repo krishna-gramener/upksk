@@ -48,6 +48,9 @@
         </div>
       </div>
       <div class="nav-right">
+        <button id="system-prompt-btn" class="btn-ghost" type="button">
+          <span>📝 System Prompt</span>
+        </button>
         <button id="settings-btn" class="btn-ghost" type="button">
           <span>⚙️ Settings</span>
         </button>
@@ -165,6 +168,31 @@
       <div class="modal-actions">
         <button type="button" class="btn btn-secondary" id="llm-config-cancel">Cancel</button>
         <button type="submit" class="btn btn-primary">Save Configuration</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- System Prompt Modal -->
+<div id="system-prompt-modal" class="modal hidden">
+  <div class="modal-overlay"></div>
+  <div class="modal-content modal-large">
+    <h2>System Prompt Configuration</h2>
+    <p id="system-prompt-subtitle" class="modal-subtitle">Customize the system prompt sent to the LLM</p>
+    <form id="system-prompt-form">
+      <div class="form-group">
+        <label for="system-prompt-text">System Prompt</label>
+        <textarea 
+          id="system-prompt-text" 
+          rows="12"
+          required 
+          placeholder="Enter your custom system prompt here..."
+        ></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="system-prompt-cancel">Cancel</button>
+        <button type="button" class="btn btn-secondary" id="system-prompt-reset">Reset to Default</button>
+        <button type="submit" class="btn btn-primary">Save Prompt</button>
       </div>
     </form>
   </div>

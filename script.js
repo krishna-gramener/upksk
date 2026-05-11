@@ -43,6 +43,7 @@ let usedSuggestionIds = [];
 document.addEventListener("DOMContentLoaded", () => {
   initUsers().then(()=>initQuestions()).then(() => {
     initLLMConfigModal();
+    initSystemPromptModal();
     checkLLMConfig();
     checkExistingSession();
     initLogin();
@@ -78,6 +79,12 @@ function checkExistingSession() {
   if (savedUser) {
     try {
       currentUser = JSON.parse(savedUser);
+      
+      // Recreate session prompt if it doesn't exist (e.g., after page refresh)
+      if (!sessionStorage.getItem("session_system_prompt")) {
+        createSessionSystemPrompt(currentUser);
+      }
+      
       showChatPage();
     } catch (err) {
       console.error("Error loading saved session:", err);
@@ -109,8 +116,30 @@ function initLogin() {
     currentUser = user;
     // Save user to localStorage
     localStorage.setItem("currentUser", JSON.stringify(user));
+    
+    // Create session-based system prompt
+    createSessionSystemPrompt(user);
+    
     showChatPage();
   });
+}
+
+// Create session-based system prompt on login
+function createSessionSystemPrompt(user) {
+  let sessionPrompt = `You are an AI assistant to the ${user.role} of the UP Government Health Monitoring System.`;
+  
+  if (user.district) {
+    sessionPrompt += `\nDistrict: ${user.district}`;
+  }
+  
+  if (user.facility_name) {
+    sessionPrompt += `\nFacility: ${user.facility_name}`;
+  }
+  
+  sessionPrompt += `\n\n${getDefaultSystemPrompt()}`;
+  
+  // Store as session prompt (will be cleared on logout)
+  sessionStorage.setItem("session_system_prompt", sessionPrompt);
 }
 
 function showChatPage() {
@@ -131,6 +160,9 @@ function logout() {
   currentUser = null;
   // Clear user from localStorage
   localStorage.removeItem("currentUser");
+  
+  // Clear session system prompt
+  sessionStorage.removeItem("session_system_prompt");
 
   document.getElementById("chat-page").classList.add("hidden");
   document.getElementById("profile-page").classList.add("hidden");
@@ -144,10 +176,16 @@ function initChatUI() {
   const chatInput = document.getElementById("chat-input");
   const logoutTopBtn = document.getElementById("logout-top-btn");
   const settingsBtn = document.getElementById("settings-btn");
+  const systemPromptBtn = document.getElementById("system-prompt-btn");
 
   // Disable chat input - it's only for display
   chatInput.disabled = true;
   chatInput.placeholder = "Click on a suggested question to ask";
+
+  // System Prompt button
+  systemPromptBtn.addEventListener("click", () => {
+    showSystemPromptModal();
+  });
 
   // Settings button
   settingsBtn.addEventListener("click", () => {
@@ -372,6 +410,90 @@ function initLLMConfigModal() {
   });
 }
 
+// Default system prompt template
+function getDefaultSystemPrompt() {
+  return `Based on the user's question and the provided healthcare data, provide a structured response in the following format:
+
+## Overview
+Provide a concise summary of the answer (2-3 sentences).
+
+## Key Details
+Provide detailed insights based on the data. Include:
+- Specific findings from the data
+- Relevant statistics or metrics
+- Tables if needed (use markdown table format)
+- Actionable recommendations
+
+Use markdown formatting for better readability. If you don't have enough information, say so briefly.
+
+Do not suggest any questions etc.`;
+}
+
+function showSystemPromptModal() {
+  const modal = document.getElementById("system-prompt-modal");
+  const textarea = document.getElementById("system-prompt-text");
+  const subtitle = document.getElementById("system-prompt-subtitle");
+  
+  // Update subtitle to show current role
+  subtitle.textContent = `Customize the system prompt for: ${currentUser.role}`;
+  
+  // Load session prompt (created on login)
+  const sessionPrompt = sessionStorage.getItem("session_system_prompt");
+  textarea.value = sessionPrompt || getDefaultSystemPrompt();
+  
+  modal.classList.remove("hidden");
+}
+
+function hideSystemPromptModal() {
+  const modal = document.getElementById("system-prompt-modal");
+  modal.classList.add("hidden");
+}
+
+function initSystemPromptModal() {
+  const form = document.getElementById("system-prompt-form");
+  const cancelBtn = document.getElementById("system-prompt-cancel");
+  const resetBtn = document.getElementById("system-prompt-reset");
+  
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    
+    const promptText = document.getElementById("system-prompt-text").value.trim();
+    
+    if (!promptText) {
+      alert("System prompt cannot be empty.");
+      return;
+    }
+    
+    // Save to session storage (will be cleared on logout)
+    sessionStorage.setItem("session_system_prompt", promptText);
+    hideSystemPromptModal();
+    alert("System prompt updated for this session!");
+  });
+  
+  cancelBtn.addEventListener("click", () => {
+    hideSystemPromptModal();
+  });
+  
+  resetBtn.addEventListener("click", () => {
+    if (!currentUser) return;
+    
+    // Reset to the default prompt created on login
+    const textarea = document.getElementById("system-prompt-text");
+    let resetPrompt = `You are an AI assistant to the ${currentUser.role} of the UP Government Health Monitoring System.`;
+    
+    if (currentUser.district) {
+      resetPrompt += `\nDistrict: ${currentUser.district}`;
+    }
+    
+    if (currentUser.facility_name) {
+      resetPrompt += `\nFacility: ${currentUser.facility_name}`;
+    }
+    
+    resetPrompt += `\n\n${getDefaultSystemPrompt()}`;
+    textarea.value = resetPrompt;
+  });
+}
+
 async function getAnswerFromLLM(question, questionId = null) {
   // Get LLM configuration from localStorage
   const llmToken = localStorage.getItem("llm_token");
@@ -385,15 +507,12 @@ async function getAnswerFromLLM(question, questionId = null) {
     throw new Error("LLM endpoint is not configured. Please configure it in settings.");
   }
 
-  // Build dynamic system prompt based on user context
-  let systemPrompt = `You are an AI assistant to the ${currentUser.role} of the UP Government Health Monitoring System.`;
+  // Get session system prompt (created on login, editable, cleared on logout)
+  let systemPrompt = sessionStorage.getItem("session_system_prompt");
   
-  if (currentUser.district) {
-    systemPrompt += `\nDistrict: ${currentUser.district}`;
-  }
-  
-  if (currentUser.facility) {
-    systemPrompt += `\nFacility: ${currentUser.facility}`;
+  // Fallback to default if session prompt doesn't exist
+  if (!systemPrompt) {
+    systemPrompt = getDefaultSystemPrompt();
   }
   
   // Get data based on whether a specific question was clicked
@@ -407,21 +526,9 @@ async function getAnswerFromLLM(question, questionId = null) {
     relevantData = ORIGINAL_SUGGESTIONS.flatMap(item => item.data || []);
   }
   
-  systemPrompt += "\n\nYou have access to the following healthcare data:\n";
-  systemPrompt += JSON.stringify(relevantData, null, 2);
-  systemPrompt += "\n\nBased on this data and the user's question, provide a structured response in the following format:";
-  systemPrompt += "\n\n## Overview";
-  systemPrompt += "\nProvide a concise summary of the answer (2-3 sentences).";
-  systemPrompt += "\n\n## Key Details";
-  systemPrompt += "\nProvide detailed insights based on the data. Include:";
-  systemPrompt += "\n- Specific findings from the data";
-  systemPrompt += "\n- Relevant statistics or metrics";
-  systemPrompt += "\n- Tables if needed (use markdown table format)";
-  systemPrompt += "\n- Actionable recommendations";
-  systemPrompt += "\n\nUse markdown formatting for better readability. If you don't have enough information, say so briefly.";
-  systemPrompt += "\n\nDo not suggest any questions etc.";
-
-  const userPrompt = `User question: "${question}"`;
+  // Build user prompt with question and data
+  let userPrompt = `User question: "${question}"\n\n`;
+  userPrompt += `Healthcare Data:\n${JSON.stringify(relevantData, null, 2)}`;
 
   const body = {
     model: LLM_MODEL,
