@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>UP Health Monitoring System – AI Assistant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+<div id="login-page" class="page">
+  <div class="login-card card">
+    <div class="badge">
+      UP Health Monitoring System
+    </div>
+    <h2>Sign in</h2>
+    <p class="login-subtitle">
+      Use your registered email and password to access the healthcare monitoring assistant.
+    </p>
+    <form id="login-form">
+      <div class="form-group">
+        <label for="email">Official Email</label>
+        <input id="email" type="email" required placeholder="you@example.com" />
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input id="password" type="password" required placeholder="••••••••" />
+      </div>
+      <button type="submit" class="btn btn-primary" id="login-btn">Login</button>
+      <div class="error" id="login-error"></div>
+    </form>
+  </div>
+</div>
+
+<!-- CHAT PAGE -->
+<div id="chat-page" class="page hidden">
+  <div class="app-shell card">
+    <!-- TOP NAV -->
+    <div class="top-nav">
+      <div class="nav-left">
+        <div class="logo-mark">UH</div>
+        <div class="logo-text">
+          <span class="logo-text-main">UP Health</span>
+          <span class="logo-text-sub">Healthcare Monitoring System</span>
+        </div>
+      </div>
+      <div class="nav-right">
+        <button id="settings-btn" class="btn-ghost" type="button">
+          <span>⚙️ Settings</span>
+        </button>
+        <button id="logout-top-btn" class="btn-ghost" type="button">
+          <span>Logout</span>
+        </button>
+        <div id="nav-profile-btn" class="nav-profile">
+          <div id="nav-avatar" class="nav-avatar">U</div>
+          <div class="nav-profile-text">
+            <span id="nav-profile-name" class="nav-profile-name">User</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+      <!-- RIGHT COLUMN -->
+      <div class="right-column">
+        <!-- Suggestions card in main section -->
+        <div class="suggestions-card suggestions-card-main">
+          <div class="suggestions-header">
+            <div>
+              <div class="suggestions-title">Welcome to UP Health AI</div>
+              <div class="suggestions-subtitle">
+                What would you like to explore today?
+              </div>
+            </div>
+          </div>
+          <div id="suggestion-grid" class="suggestion-grid">
+            <!-- Suggestion cards injected by JS -->
+          </div>
+        </div>
+
+        <div class="chat-body">
+          <div id="messages" class="messages"></div>
+          <div id="status-line" class="status-line"></div>
+
+          <div class="recommendation-wrapper">
+            <div id="recommendation-card" class="recommendation-card hidden"></div>
+          </div>
+
+          <div class="input-area">
+            <div class="input-row">
+              <input
+                id="chat-input"
+                class="chat-input"
+                type="text"
+                placeholder="Click on a suggested question to ask"
+                disabled
+              />
+              <button id="send-btn" class="send-btn hidden" type="button" disabled>
+                <span>Send</span>
+                <span class="send-icon">➤</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div> <!-- end right-column -->
+    </div>   <!-- end main-content -->
+  </div>     <!-- end app-shell -->
+</div>       <!-- end chat-page -->
+
+<!-- PROFILE PAGE -->
+<div id="profile-page" class="page hidden">
+  <div class="card profile-page-card">
+    <div class="profile-page-header">
+      <div>
+        <h2>User Profile</h2>
+        <p class="profile-page-subtitle">
+          View your details and role information.
+        </p>
+      </div>
+      <div class="profile-page-header-actions">
+        <button type="button" class="btn-outline" id="profile-back-to-chat-btn">
+          ← Back to Chat
+        </button>
+        <button type="button" class="btn-danger" id="profile-logout-btn">
+          Logout
+        </button>
+      </div>
+    </div>
+
+    <div id="profile-page-content">
+      <!-- Filled by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- LLM CONFIGURATION MODAL -->
+<div id="llm-config-modal" class="modal hidden">
+  <div class="modal-overlay"></div>
+  <div class="modal-content">
+    <h2>LLM Configuration</h2>
+    <p class="modal-subtitle">Configure your LLM endpoint and authentication token</p>
+    <form id="llm-config-form">
+      <div class="form-group">
+        <label for="llm-endpoint">LLM Endpoint URL</label>
+        <input 
+          id="llm-endpoint" 
+          type="url" 
+          required 
+          placeholder="Enter your LLM endpoint URL" 
+        />
+      </div>
+      <div class="form-group">
+        <label for="llm-token">LLM Token</label>
+        <input 
+          id="llm-token" 
+          type="text" 
+          required 
+          placeholder="Enter your LLM authentication token" 
+        />
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="llm-config-cancel">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Configuration</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="script.js" type="module"></script>
+</body>
+</html>
