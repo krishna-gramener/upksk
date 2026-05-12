@@ -42,9 +42,9 @@ let usedSuggestionIds = [];
 
 document.addEventListener("DOMContentLoaded", () => {
   initUsers().then(()=>initQuestions()).then(() => {
-    initLLMConfigModal();
-    initSystemPromptModal();
-    checkLLMConfig();
+    // initLLMConfigModal();
+    // initSystemPromptModal();
+    // checkLLMConfig();
     checkExistingSession();
     initLogin();
     initChatUI();
@@ -367,75 +367,75 @@ function setStatusThinking(el, isThinking) {
   `;
 }
 
-function checkLLMConfig() {
-  const token = localStorage.getItem("llm_token");
-  const endpoint = localStorage.getItem("llm_endpoint");
-  
-  if (!token || !endpoint) {
-    showLLMConfigModal();
-  }
-}
+// function checkLLMConfig() {
+//   const token = localStorage.getItem("llm_token");
+//   const endpoint = localStorage.getItem("llm_endpoint");
+//   
+//   if (!token || !endpoint) {
+//     // showLLMConfigModal();
+//   }
+// }
 
-function showLLMConfigModal() {
-  const modal = document.getElementById("llm-config-modal");
-  modal.classList.remove("hidden");
-}
+// function showLLMConfigModal() {
+//   const modal = document.getElementById("llm-config-modal");
+//   modal.classList.remove("hidden");
+// }
 
-function hideLLMConfigModal() {
-  const modal = document.getElementById("llm-config-modal");
-  modal.classList.add("hidden");
-}
+// function hideLLMConfigModal() {
+//   const modal = document.getElementById("llm-config-modal");
+//   modal.classList.add("hidden");
+// }
 
-function initLLMConfigModal() {
-  const form = document.getElementById("llm-config-form");
-  const cancelBtn = document.getElementById("llm-config-cancel");
-  
-  // Pre-fill if values exist
-  const savedToken = localStorage.getItem("llm_token");
-  const savedEndpoint = localStorage.getItem("llm_endpoint");
-  
-  if (savedToken) {
-    document.getElementById("llm-token").value = savedToken;
-  }
-  if (savedEndpoint) {
-    document.getElementById("llm-endpoint").value = savedEndpoint;
-  }
-  
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    
-    const token = document.getElementById("llm-token").value.trim();
-    const endpoint = document.getElementById("llm-endpoint").value.trim();
-    
-    if (!token || !endpoint) {
-      alert("Please provide both LLM token and endpoint.");
-      return;
-    }
-    
-    localStorage.setItem("llm_token", token);
-    localStorage.setItem("llm_endpoint", endpoint);
-    
-    hideLLMConfigModal();
-  });
-  
-  cancelBtn.addEventListener("click", () => {
-    const token = localStorage.getItem("llm_token");
-    const endpoint = localStorage.getItem("llm_endpoint");
-    
-    if (!token || !endpoint) {
-      alert("LLM configuration is required to use the application.");
-    } else {
-      hideLLMConfigModal();
-    }
-  });
-}
+// function initLLMConfigModal() {
+//   const form = document.getElementById("llm-config-form");
+//   const cancelBtn = document.getElementById("llm-config-cancel");
+//   
+//   // Pre-fill if values exist
+//   const savedToken = localStorage.getItem("llm_token");
+//   const savedEndpoint = localStorage.getItem("llm_endpoint");
+//   
+//   if (savedToken) {
+//     document.getElementById("llm-token").value = savedToken;
+//   }
+//   if (savedEndpoint) {
+//     document.getElementById("llm-endpoint").value = savedEndpoint;
+//   }
+//   
+//   form.addEventListener("submit", (e) => {
+//     e.preventDefault();
+//     
+//     const token = document.getElementById("llm-token").value.trim();
+//     const endpoint = document.getElementById("llm-endpoint").value.trim();
+//     
+//     if (!token || !endpoint) {
+//       alert("Please provide both LLM token and endpoint.");
+//       return;
+//     }
+//     
+//     localStorage.setItem("llm_token", token);
+//     localStorage.setItem("llm_endpoint", endpoint);
+//     
+//     hideLLMConfigModal();
+//   });
+//   
+//   cancelBtn.addEventListener("click", () => {
+//     const token = localStorage.getItem("llm_token");
+//     const endpoint = localStorage.getItem("llm_endpoint");
+//     
+//     if (!token || !endpoint) {
+//       alert("LLM configuration is required to use the application.");
+//     } else {
+//       hideLLMConfigModal();
+//     }
+//   });
+// }
 
 // Default system prompt template
 function getDefaultSystemPrompt() {
   return `Based on the user's question and the provided healthcare data, provide a structured response in the following format:
 
 ## Overview
-Provide a concise summary of the answer (2-3 sentences).
+Provide a concise summary of the answer (2-3 sentences) with accurate data.
 
 ## Key Details
 Provide detailed insights based on the data. Include:
@@ -515,74 +515,90 @@ function initSystemPromptModal() {
 }
 
 async function getAnswerFromLLM(question, questionId = null) {
-  // Get LLM configuration from localStorage
-  const llmToken = localStorage.getItem("llm_token");
-  const llmEndpoint = localStorage.getItem("llm_endpoint");
-  
-  if (!llmToken || llmToken.trim() === "") {
-    throw new Error("LLM token is not configured. Please configure it in settings.");
-  }
-  
-  if (!llmEndpoint || llmEndpoint.trim() === "") {
-    throw new Error("LLM endpoint is not configured. Please configure it in settings.");
-  }
-
-  // Get session system prompt (created on login, editable, cleared on logout)
-  let systemPrompt = sessionStorage.getItem("session_system_prompt");
-  
-  // Fallback to default if session prompt doesn't exist
-  if (!systemPrompt) {
-    systemPrompt = getDefaultSystemPrompt();
-  }
-  
-  // Get data based on whether a specific question was clicked
-  let relevantData;
+  // Check if this is a predefined question with an answer
   if (questionId !== null) {
-    // Find the specific question and use only its data
     const questionObj = ORIGINAL_SUGGESTIONS.find(item => item.id === questionId);
-    relevantData = questionObj ? (questionObj.data || []) : [];
-  } else {
-    // For free-form questions, use all data
-    relevantData = ORIGINAL_SUGGESTIONS.flatMap(item => item.data || []);
+    
+    // If the question has a pre-defined answer, use it
+    if (questionObj && questionObj.answer && questionObj.answer.trim() !== "") {
+      // Simulate 5 seconds of "thinking" time
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      
+      // Return the pre-defined answer
+      return questionObj.answer.trim();
+    }
   }
   
-  // Build user prompt with question and data
-  let userPrompt = `User question: "${question}"\n\n`;
-  userPrompt += `Healthcare Data:\n${JSON.stringify(relevantData, null, 2)}`;
+  // If no pre-defined answer exists, fall back to LLM
+  // // Get LLM configuration from localStorage
+  // const llmToken = localStorage.getItem("llm_token");
+  // const llmEndpoint = localStorage.getItem("llm_endpoint");
+  
+  // if (!llmToken || llmToken.trim() === "") {
+  //   throw new Error("LLM token is not configured. Please configure it in settings.");
+  // }
+  
+  // if (!llmEndpoint || llmEndpoint.trim() === "") {
+  //   throw new Error("LLM endpoint is not configured. Please configure it in settings.");
+  // }
 
-  const body = {
-    model: LLM_MODEL,
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: userPrompt }
-    ]
-  };
+  // // Get session system prompt (created on login, editable, cleared on logout)
+  // let systemPrompt = sessionStorage.getItem("session_system_prompt");
+  
+  // // Fallback to default if session prompt doesn't exist
+  // if (!systemPrompt) {
+  //   systemPrompt = getDefaultSystemPrompt();
+  // }
+  
+  // // Get data based on whether a specific question was clicked
+  // let relevantData;
+  // if (questionId !== null) {
+  //   // Find the specific question and use only its data
+  //   const questionObj = ORIGINAL_SUGGESTIONS.find(item => item.id === questionId);
+  //   relevantData = questionObj ? (questionObj.data || []) : [];
+  // } else {
+  //   // For free-form questions, use all data
+  //   relevantData = ORIGINAL_SUGGESTIONS.flatMap(item => item.data || []);
+  // }
+  
+  // // Build user prompt with question and data
+  // let userPrompt = `User question: "${question}"\n\n`;
+  // userPrompt += `Healthcare Data:\n${JSON.stringify(relevantData, null, 2)}`;
 
-  const headers = {
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${llmToken.trim()}:upksk`
-  };
+  // const body = {
+  //   model: LLM_MODEL,
+  //   messages: [
+  //     { role: "system", content: systemPrompt },
+  //     { role: "user", content: userPrompt }
+  //   ]
+  // };
 
-  const response = await fetch(llmEndpoint, {
-    method: "POST",
-    headers,
-    body: JSON.stringify(body)
-  });
+  // const headers = {
+  //   "Content-Type": "application/json",
+  //   "Authorization": `Bearer ${llmToken.trim()}:upksk`
+  // };
 
-  if (!response.ok) {
-    const text = await response.text();
-    console.error("LLM error:", response.status, text);
+  // const response = await fetch(llmEndpoint, {
+  //   method: "POST",
+  //   headers,
+  //   body: JSON.stringify(body)
+  // });
 
-    if (response.status === 401) {
-      throw new Error("Unauthorized (401). Check that your LLM token is correct and active.");
-    }
+  // if (!response.ok) {
+  //   const text = await response.text();
+  //   console.error("LLM error:", response.status, text);
 
-    throw new Error("LLM request failed with status " + response.status);
-  }
+  //   if (response.status === 401) {
+  //     throw new Error("Unauthorized (401). Check that your LLM token is correct and active.");
+  //   }
 
-  const data = await response.json();
-  const answer = data.choices?.[0]?.message?.content || "No answer returned.";
-  return answer.trim();
+  //   throw new Error("LLM request failed with status " + response.status);
+  // }
+
+  // const data = await response.json();
+  // const answer = data.choices?.[0]?.message?.content || "No answer returned.";
+  // console.log(answer);
+  // return answer.trim();
 }
 
 function appendMessage(role, text) {
