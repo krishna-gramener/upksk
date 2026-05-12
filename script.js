@@ -177,15 +177,23 @@ function initChatUI() {
   const logoutTopBtn = document.getElementById("logout-top-btn");
   const settingsBtn = document.getElementById("settings-btn");
   const systemPromptBtn = document.getElementById("system-prompt-btn");
+  const homeBtn = document.getElementById("home-btn");
 
   // Disable chat input - it's only for display
   chatInput.disabled = true;
   chatInput.placeholder = "Click on a suggested question to ask";
 
-  // System Prompt button
-  systemPromptBtn.addEventListener("click", () => {
-    showSystemPromptModal();
+  // Home button - reset chat and show suggestions
+  homeBtn.addEventListener("click", () => {
+    resetChatSession();
   });
+
+  // System Prompt button (if it exists)
+  if (systemPromptBtn) {
+    systemPromptBtn.addEventListener("click", () => {
+      showSystemPromptModal();
+    });
+  }
 
   // Settings button
   settingsBtn.addEventListener("click", () => {
@@ -234,6 +242,12 @@ function resetChatSession() {
   const statusLine = document.getElementById("status-line");
   setStatusThinking(statusLine, false);
 
+  // Show suggestions card again
+  const suggestionsCard = document.getElementById("suggestions-card-main");
+  if (suggestionsCard) {
+    suggestionsCard.classList.remove("hidden");
+  }
+
   resetSuggestions();
   updateRecommendation();
 }
@@ -276,6 +290,12 @@ function handleSuggestionClick(id, question) {
   // Just mark it as used for recommendation purposes
   usedSuggestionIds.push(id);
   remainingSuggestions = remainingSuggestions.filter((q) => q.id !== id);
+
+  // Hide the suggestions card for better readability
+  const suggestionsCard = document.getElementById("suggestions-card-main");
+  if (suggestionsCard) {
+    suggestionsCard.classList.add("hidden");
+  }
 
   // Pass the question ID along with the question text
   handleUserQuestion(question, id);
