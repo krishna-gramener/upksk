@@ -195,10 +195,12 @@ function initChatUI() {
     });
   }
 
-  // Settings button
-  settingsBtn.addEventListener("click", () => {
-    showLLMConfigModal();
-  });
+  // Settings button (if it exists)
+  if (settingsBtn) {
+    settingsBtn.addEventListener("click", () => {
+      showLLMConfigModal();
+    });
+  }
 
   // Top-nav logout
   logoutTopBtn.addEventListener("click", () => {
