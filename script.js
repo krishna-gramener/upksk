@@ -6,7 +6,7 @@ const QUESTIONS_JSON_PATH = "questions.json";
 const EMBEDDED_USERS = [
   {
     "name": "Dr. Vivek Mishra",
-    "email": "vivek.mishra@uphealth.gov.in",
+    "email": "vivek.mishra@uphealth.abc.com",
     "password": "abc@123",
     "role": "Chief Medical Officer",
     "district": "",
@@ -15,7 +15,7 @@ const EMBEDDED_USERS = [
   },
   {
     "name": "Pooja Srivastava",
-    "email": "pooja.srivastava@uphealth.gov.in",
+    "email": "pooja.srivastava@uphealth.abc.com",
     "password": "abc@123",
     "role": "Facility Incharge",
     "district": "Lucknow",
@@ -24,7 +24,7 @@ const EMBEDDED_USERS = [
   },
   {
     "name": "Amit Tiwari",
-    "email": "amit.tiwari@uphealth.gov.in",
+    "email": "amit.tiwari@uphealth.abc.com",
     "password": "abc@123",
     "role": "District Health Officer",
     "district": "Mirzapur",
