@@ -513,9 +513,31 @@
     overflow-x: hidden;
     padding-right: 4px;
     padding-bottom: 4px;
-    max-height: calc(100vh - 400px);
-    min-height: 200px;
+    max-height: calc(100vh - 300px);
+    min-height: 300px;
     scroll-behavior: smooth;
+  }
+  
+  /* Responsive adjustments for messages container */
+  @media (max-width: 900px) {
+    .messages {
+      max-height: calc(100vh - 350px);
+      min-height: 250px;
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .messages {
+      max-height: calc(100vh - 400px);
+      min-height: 200px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .messages {
+      max-height: calc(100vh - 450px);
+      min-height: 180px;
+    }
   }
   
   /* Custom scrollbar for messages */
@@ -744,88 +766,7 @@
     font-size: 12px;
   }
 
-  /* INPUT AREA */
-  .input-area {
-    border-top: 1px solid #e5e7eb;
-    padding-top: 6px;
-    margin-top: 4px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
 
-  .input-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .chat-input {
-    flex: 1;
-    padding: 9px 12px;
-    border-radius: 999px;
-    border: 1px solid #d1d5db;
-    font-size: 14px;
-    background: #f3f4f6;
-    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
-  }
-
-  .chat-input:focus {
-    outline: none;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
-    background: #ffffff;
-  }
-
-  .chat-input:disabled {
-    background: #f3f4f6;
-    cursor: not-allowed;
-    opacity: 0.6;
-  }
-
-  .send-btn {
-    padding: 8px 12px;
-    border-radius: 999px;
-    border: none;
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
-    color: #fff;
-    font-size: 13px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.35);
-    transition: background 0.15s, box-shadow 0.15s, transform 0.05s;
-  }
-
-  .send-btn:hover {
-    background: linear-gradient(135deg, #1d4ed8, #1e40af);
-    box-shadow: 0 10px 24px rgba(37, 99, 235, 0.45);
-    transform: translateY(-1px);
-  }
-
-  .send-btn:active {
-    transform: translateY(0);
-    box-shadow: 0 6px 14px rgba(37, 99, 235, 0.35);
-  }
-
-  .send-icon {
-    width: 16px;
-    height: 16px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.15);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-  }
-
-  .send-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    box-shadow: none;
-    background: #9ca3af;
-  }
 
   /* PROFILE PAGE – CLEAN, MODERN CARD */
   #profile-page {

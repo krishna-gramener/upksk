@@ -2,36 +2,7 @@
 const LLM_MODEL = "gpt-5.4-mini";
 const USERS_JSON_PATH = "users.json";
 const QUESTIONS_JSON_PATH = "questions.json";
-/* Embedded user data */
-const EMBEDDED_USERS = [
-  {
-    "name": "Dr. Vivek Mishra",
-    "email": "vivek.mishra@uphealth.abc.com",
-    "password": "abc@123",
-    "role": "Chief Medical Officer",
-    "district": "",
-    "facility_name": "",
-    "role_description": "Responsible for monitoring healthcare services, reviewing district-wide health program performance, supervising public health initiatives, and coordinating with district administration across Uttar Pradesh."
-  },
-  {
-    "name": "Pooja Srivastava",
-    "email": "pooja.srivastava@uphealth.abc.com",
-    "password": "abc@123",
-    "role": "Facility Incharge",
-    "district": "Lucknow",
-    "facility_name": "Community Health Center Gomti Nagar",
-    "role_description": "Handles day-to-day operations of the healthcare facility including patient management, staff coordination, medicine availability, reporting, and ensuring smooth execution of health services."
-  },
-  {
-    "name": "Amit Tiwari",
-    "email": "amit.tiwari@uphealth.abc.com",
-    "password": "abc@123",
-    "role": "District Health Officer",
-    "district": "Mirzapur",
-    "facility_name": "",
-    "role_description": "Oversees implementation of district health programs, monitors healthcare indicators, coordinates with healthcare facilities, and supports administrative and operational health activities at the district level."
-  }
-];
+const TEMPLATE_JSON_PATH = "templates.json";
 
 let users = [];
 let currentUser = null;
@@ -39,9 +10,9 @@ let ORIGINAL_SUGGESTIONS = [];
 let isWaitingForResponse = false;
 let remainingSuggestions = [];
 let usedSuggestionIds = [];
-
+let templates = [];
 document.addEventListener("DOMContentLoaded", () => {
-  initUsers().then(()=>initQuestions()).then(() => {
+  initUsers().then(()=>initQuestions()).then(() => initTemplates()).then(() => {
     initLLMConfigModal();
     initSystemPromptModal();
     checkLLMConfig();
@@ -59,7 +30,6 @@ async function initUsers() {
     users = await res.json();
   } catch (err) {
     console.error("Error loading users:", err);
-    users = EMBEDDED_USERS;
   }
 }
 
@@ -70,7 +40,16 @@ async function initQuestions() {
     ORIGINAL_SUGGESTIONS = await res.json();
   } catch (err) {
     console.error("Error loading questions:", err);
-    ORIGINAL_SUGGESTIONS = EMBEDDED_QUESTIONS;
+  }
+}
+
+async function initTemplates() {
+  try {
+    const res = await fetch(TEMPLATE_JSON_PATH);
+    if (!res.ok) throw new Error("Failed to load questions.json");
+    templates = await res.json();
+  } catch (err) {
+    console.error("Error loading questions:", err);
   }
 }
 
@@ -126,7 +105,7 @@ function initLogin() {
 
 // Create session-based system prompt on login
 function createSessionSystemPrompt(user) {
-  let sessionPrompt = `You are an AI assistant to the ${user.role} of the UP Government Health Monitoring System.`;
+  let sessionPrompt = `You are an assistant to the ${user.role} of the UP Government Health Monitoring System.`;
   
   if (user.district) {
     sessionPrompt += `\nDistrict: ${user.district}`;
@@ -134,6 +113,16 @@ function createSessionSystemPrompt(user) {
   
   if (user.facility_name) {
     sessionPrompt += `\nFacility: ${user.facility_name}`;
+  }
+  
+  // Add role-specific template if available
+  if (user.template && templates.length > 0) {
+    const templateKey = user.template;
+    const templateObj = templates[0]; // templates is an array with one object
+    
+    if (templateObj[templateKey]) {
+      sessionPrompt += `\n\n## Instructions\n${templateObj[templateKey]}`;
+    }
   }
   
   sessionPrompt += `\n\n${getDefaultSystemPrompt()}`;
@@ -173,15 +162,10 @@ function logout() {
 
 function initChatUI() {
   const navProfileBtn = document.getElementById("nav-profile-btn");
-  const chatInput = document.getElementById("chat-input");
   const logoutTopBtn = document.getElementById("logout-top-btn");
   const settingsBtn = document.getElementById("settings-btn");
   const systemPromptBtn = document.getElementById("system-prompt-btn");
   const homeBtn = document.getElementById("home-btn");
-
-  // Disable chat input - it's only for display
-  chatInput.disabled = true;
-  chatInput.placeholder = "Click on a suggested question to ask";
 
   // Home button - reset chat and show suggestions
   homeBtn.addEventListener("click", () => {
@@ -432,21 +416,7 @@ function initLLMConfigModal() {
 
 // Default system prompt template
 function getDefaultSystemPrompt() {
-  return `Based on the user's question and the provided healthcare data, provide a structured response in the following format:
-
-## Overview
-Provide a concise summary of the answer (2-3 sentences).
-
-## Key Details
-Provide detailed insights based on the data. Include:
-- Specific findings from the data
-- Relevant statistics or metrics
-- Tables if needed (use markdown table format)
-- Actionable recommendations
-
-Use markdown formatting for better readability. If you don't have enough information, say so briefly.
-
-Do not suggest any questions etc.`;
+  return `Based on the user's question and the provided healthcare data and instruction, provide a structured response.`;
 }
 
 function showSystemPromptModal() {
@@ -582,6 +552,7 @@ async function getAnswerFromLLM(question, questionId = null) {
 
   const data = await response.json();
   const answer = data.choices?.[0]?.message?.content || "No answer returned.";
+  console.log(answer);
   return answer.trim();
 }
 

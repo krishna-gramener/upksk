@@ -3,7 +3,8 @@
     "name": "Dr. Vivek Mishra",
     "email": "vivek.mishra@uphealth.abc.com",
     "password": "abc@123",
-    "role": "Chief Medical Officer",
+    "role": "State Level Health Officer",
+    "template":"state",
     "district": "",
     "facility_name": "",
     "role_description": "Responsible for monitoring healthcare services, reviewing district-wide health program performance, supervising public health initiatives, and coordinating with district administration across Uttar Pradesh."
@@ -12,16 +13,18 @@
     "name": "Pooja Srivastava",
     "email": "pooja.srivastava@uphealth.abc.com",
     "password": "abc@123",
-    "role": "Facility Incharge",
-    "district": "Lucknow",
-    "facility_name": "Community Health Center Gomti Nagar",
+    "role": "MOIC",
+    "template":"moic",
+    "district": "Mirzapur",
+    "facility_name": "sc babura bhairodayal",
     "role_description": "Handles day-to-day operations of the healthcare facility including patient management, staff coordination, medicine availability, reporting, and ensuring smooth execution of health services."
   },
   {
     "name": "Amit Tiwari",
     "email": "amit.tiwari@uphealth.abc.com",
     "password": "abc@123",
-    "role": "District Health Officer",
+    "role": "Chief Medical Officer",
+    "template":"cmo",
     "district": "Mirzapur",
     "facility_name": "",
     "role_description": "Oversees implementation of district health programs, monitors healthcare indicators, coordinates with healthcare facilities, and supports administrative and operational health activities at the district level."
