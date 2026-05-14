@@ -416,7 +416,18 @@ function initLLMConfigModal() {
 
 // Default system prompt template
 function getDefaultSystemPrompt() {
-  return `Based on the user's question and the provided healthcare data and instruction, provide a structured response.`;
+  // If user has a template and templates are loaded, return the role-specific template
+  if (currentUser && currentUser.template && templates.length > 0) {
+    const templateKey = currentUser.template;
+    const templateObj = templates[0]; // templates is an array with one object
+    
+    if (templateObj[templateKey]) {
+      return templateObj[templateKey];
+    }
+  }
+  
+  // Fallback to generic prompt if no template is found
+  return `Based on the user's question and the provided healthcare data, provide a structured response with an Overview section and a Key Details section.`;
 }
 
 function showSystemPromptModal() {
