@@ -199,7 +199,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 18px;
+    padding: 8px 14px;
     border-bottom: 1px solid #e5e7eb;
     background: rgba(249, 250, 251, 0.9);
     backdrop-filter: blur(10px);
@@ -340,15 +340,16 @@
     z-index: 1;
     display: flex;
     flex: 1;
-    padding: 12px 18px 14px;
+    padding: 10px 14px 12px;
+    gap: 12px;
   }
 
   .left-column {
-    flex: 1 1 360px;
-    max-width: 420px;
+    flex: 1 1 340px;
+    max-width: 400px;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 12px;
   }
 
   .welcome-title {
@@ -366,14 +367,14 @@
   }
 
   .suggestions-card {
-    padding: 20px 24px 24px;
-    border-radius: 16px;
+    padding: 16px 18px 12px;
+    border-radius: 14px;
     background: #ffffff;
     border: 1px solid #e5e7eb;
     box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 6px;
   }
 
   .suggestions-header {
@@ -381,14 +382,14 @@
     justify-content: center;
     align-items: center;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 8px;
   }
 
   .suggestions-title {
     font-size: 24px;
     font-weight: 600;
     color: #111827;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
 
   .suggestions-subtitle {
@@ -399,13 +400,14 @@
   .suggestion-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
+    gap: 10px;
     margin-top: 0;
+    margin-bottom: 0;
   }
 
   .suggestion-card {
-    border-radius: 14px;
-    padding: 10px 10px;
+    border-radius: 12px;
+    padding: 9px 10px;
     border: 1px solid #e5e7eb;
     background: #f9fafb;
     cursor: pointer;
@@ -468,7 +470,7 @@
   }
 
   .chat-header {
-    padding: 10px 14px;
+    padding: 8px 12px;
     border-bottom: 1px solid #e5e7eb;
     background: rgba(249, 250, 251, 0.9);
     backdrop-filter: blur(10px);
@@ -503,40 +505,37 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding: 10px 12px 8px;
-    gap: 6px;
+    padding: 0;
+    gap: 0;
+    overflow: hidden;
   }
 
   .messages {
     flex: 1;
     overflow-y: auto;
     overflow-x: hidden;
-    padding-right: 4px;
-    padding-bottom: 4px;
-    max-height: calc(100vh - 300px);
-    min-height: 300px;
+    padding: 8px 12px 6px 10px;
+    max-height: 100%;
+    min-height: 0;
     scroll-behavior: smooth;
   }
   
   /* Responsive adjustments for messages container */
   @media (max-width: 900px) {
     .messages {
-      max-height: calc(100vh - 350px);
-      min-height: 250px;
+      padding: 7px 10px 5px 9px;
     }
   }
   
   @media (max-width: 600px) {
     .messages {
-      max-height: calc(100vh - 400px);
-      min-height: 200px;
+      padding: 6px 9px 4px 8px;
     }
   }
   
   @media (max-width: 480px) {
     .messages {
-      max-height: calc(100vh - 450px);
-      min-height: 180px;
+      padding: 6px 8px 4px 7px;
     }
   }
   
@@ -560,9 +559,9 @@
   }
 
   .message {
-    margin-bottom: 10px;
-    max-width: 90%;
-    line-height: 1.4;
+    margin-bottom: 8px;
+    max-width: 92%;
+    line-height: 1.45;
     font-size: 14px;
     display: flex;
     flex-direction: column;
@@ -579,11 +578,12 @@
 
   .bubble {
     display: inline-block;
-    padding: 8px 12px;
+    padding: 10px 14px;
     border-radius: 16px;
     position: relative;
     animation: fadeInUp 0.18s ease-out;
     white-space: pre-wrap;
+    word-wrap: break-word;
   }
 
   .message.user .bubble {
@@ -606,8 +606,8 @@
     font-size: 16px;
     font-weight: 700;
     color: #1f2937;
-    margin-top: 12px;
-    margin-bottom: 8px;
+    margin-top: 10px;
+    margin-bottom: 6px;
     border-bottom: 2px solid #e5e7eb;
     padding-bottom: 4px;
   }
@@ -620,24 +620,25 @@
     font-size: 14px;
     font-weight: 600;
     color: #374151;
-    margin-top: 10px;
-    margin-bottom: 6px;
+    margin-top: 8px;
+    margin-bottom: 5px;
   }
 
   .message.bot .bubble p {
-    margin-bottom: 8px;
-    line-height: 1.5;
+    margin-bottom: 6px;
+    line-height: 1.6;
   }
 
   .message.bot .bubble ul,
   .message.bot .bubble ol {
-    margin-left: 20px;
-    margin-bottom: 8px;
+    margin-left: 18px;
+    margin-bottom: 6px;
+    padding-left: 4px;
   }
 
   .message.bot .bubble li {
-    margin-bottom: 4px;
-    line-height: 1.5;
+    margin-bottom: 3px;
+    line-height: 1.6;
   }
 
   .message.bot .bubble table {
@@ -708,11 +709,11 @@
   .status-line {
     font-size: 12px;
     color: #6b7280;
-    min-height: 16px;
+    min-height: 14px;
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 0 2px 2px;
+    padding: 0 10px 2px;
   }
 
   .dot-pulse {
@@ -733,9 +734,9 @@
 
   /* RECOMMENDED QUESTION SECTION */
   .recommendation-wrapper {
-    margin-top: 4px;
-    margin-bottom: 4px;
-    min-height: 32px;
+    margin: 0;
+    padding: 2px 10px 6px;
+    min-height: 28px;
   }
 
   .recommendation-card {
@@ -1053,8 +1054,19 @@
 
   @media (max-width: 900px) {
     .app-shell { max-width: 100%; border-radius: 0; }
-    .main-content { flex-direction: column; }
+    .main-content { flex-direction: column; padding: 8px 12px 10px; }
     .left-column, .right-column { max-width: 100%; }
+    .left-column { gap: 10px; }
+    .suggestions-card { padding: 14px 16px 10px; }
+  }
+
+  @media (max-width: 768px) {
+    .chat-header {
+      padding: 7px 10px;
+    }
+    .message {
+      max-width: 94%;
+    }
   }
 
   @media (max-width: 720px) {
@@ -1082,20 +1094,31 @@
     .top-nav {
       flex-direction: column;
       align-items: flex-start;
-      gap: 8px;
+      gap: 6px;
+      padding: 6px 10px;
     }
     .nav-right {
       align-self: stretch;
       justify-content: space-between;
     }
     .main-content {
-      padding: 12px 10px 14px;
+      padding: 8px 8px 10px;
     }
     .right-column {
-      border-radius: 14px;
+      border-radius: 12px;
     }
-    .suggestions-card-main {
-      margin: 4px 8px 0 8px;
+    .suggestions-card {
+      padding: 12px 14px 8px;
+    }
+    .chat-header {
+      padding: 6px 10px;
+    }
+    .message {
+      max-width: 95%;
+      margin-bottom: 6px;
+    }
+    .bubble {
+      padding: 8px 12px;
     }
   }
 
